@@ -11,18 +11,39 @@ name: CI - aprendendo-Springboot
 on:
   pull_request:
     branches:
-      - main
+        - main
+        - develop
     types:
       - opened
       - synchronize
       - reopened
     paths:
       - 'aprendendo-Springboot/**'
-      - '.github/workflows/aprendendo-springboot.yml'
+      - '.github/workflows/maven.yml'
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: db_usuario
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/db_usuario
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
 
     defaults:
       run:
